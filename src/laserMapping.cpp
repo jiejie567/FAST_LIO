@@ -851,6 +851,10 @@ int main(int argc, char** argv)
             ("/Odometry", 100000);
     ros::Publisher pubPath          = nh.advertise<nav_msgs::Path> 
             ("/path", 100000);
+    ros::Publisher pubBa = nh.advertise<geometry_msgs::Point>("/ba", 10000);
+    ros::Publisher pubBg = nh.advertise<geometry_msgs::Point>("/bg", 10000);
+    ros::Publisher pubG = nh.advertise<geometry_msgs::Point>("/g", 10000);
+    ros::Publisher pubV = nh.advertise<geometry_msgs::Point>("/v", 10000);
 //------------------------------------------------------------------------------------------------------
     signal(SIGINT, SigHandle);
     ros::Rate rate(5000);
@@ -968,6 +972,30 @@ int main(int argc, char** argv)
             t3 = omp_get_wtime();
             map_incremental();
             t5 = omp_get_wtime();
+
+            geometry_msgs::Point ba;
+            ba.x = kf.get_x().ba[0];
+            ba.y = kf.get_x().ba[1];
+            ba.z = kf.get_x().ba[2];
+            pubBa.publish(ba);
+
+            geometry_msgs::Point bg;
+            bg.x = kf.get_x().bg[0];
+            bg.y = kf.get_x().bg[1];
+            bg.z = kf.get_x().bg[2];
+            pubBg.publish(bg);
+
+            geometry_msgs::Point g;
+            g.x = kf.get_x().grav[0];
+            g.y = kf.get_x().grav[1];
+            g.z = kf.get_x().grav[2];
+            pubG.publish(g);
+
+            geometry_msgs::Point v;
+            v.x = kf.get_x().vel[0];
+            v.y = kf.get_x().vel[1];
+            v.z = kf.get_x().vel[2];
+            pubV.publish(v);
             
             /******* Publish points *******/
             if (path_en)                         publish_path(pubPath);
